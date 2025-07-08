@@ -1,27 +1,29 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { assets } from '../assets/assets';
 import {motion} from 'framer-motion'
+import { AppContext } from '../context/AppContext';
 
 const Result = () => {
   const [image, setImage] = useState(assets.sample_img_1);
   const [isImageLoaded, setIsImageLoaded] = useState(false);
-  const [loading, setIsImageLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [input, setInput] = useState('');
+  const{generateImage} = useContext(AppContext)
 
   const onSubmitHandler = async (e) => {
     e.preventDefault();
-    if (!input.trim()) return;
+    setLoading(true)
+    if(input){
+      const image = await generateImage(input)
+        if (image) {
+     setIsImageLoaded(true);
+setImage(image)
+    }
 
-    // Start loading
-    setIsImageLoading(true);
-    setIsImageLoaded(false);
+    }
+  setLoading(false)
+  
 
-    // Simulate generation
-    setTimeout(() => {
-      setImage(assets.sample_img_2 || assets.sample_img_1); // You can swap with actual generation
-      setIsImageLoading(false);
-      setIsImageLoaded(true);
-    }, 3000);
   };
 
   return (

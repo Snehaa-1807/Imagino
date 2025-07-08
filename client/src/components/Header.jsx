@@ -32,7 +32,7 @@ const Header = () => {
         <motion.h1 className='text-4xl max-w-[300px] sm:text-7xl sm:max-w-[590px] mx-auto mt-10 text-center'>Turn text to<span className='text-blue-600'
           initial={{opacity:0}}
     animate={{opacity:1}}
-    transition={{duration:2, delay:0.4}}>image</span>  in seconds</motion.h1>
+    transition={{duration:2, delay:0.4}}> image</span>  in seconds</motion.h1>
         <motion.p className='text-center max-w-xl mx-auto mt-5'
          initial={{opacity:0, y:20}}
     animate={{opacity:1, y:0}}
@@ -51,13 +51,16 @@ const Header = () => {
          initial={{opacity:0}}
     animate={{opacity:1, }}
     transition={{duration:1, delay:1}}>
-            {Array(6).fill('').map((item,index)=>{
-                <motion.img 
-        whileHover={{scale:1.05, duration:0.1}}
-                className='rounded hover:scale-105 transition-all duration-300 cursor-pointer max-sm:w-10'
-                 src={index % 2 ===0 ? assets.sample_img_2 : assets.sample_img_1}
-                alt='' key={index} width={70}/>
-            })}
+            {Array(6).fill('').map((item, index) => (
+    <motion.img 
+        key={index}
+        whileHover={{scale:1.05}}
+        className='rounded hover:scale-105 transition-all duration-300 cursor-pointer max-sm:w-10'
+        src={index % 2 === 0 ? assets.sample_img_2 : assets.sample_img_1}
+        alt=''
+        width={70}
+    />
+))}
 
         </motion.div>
         <motion.p
