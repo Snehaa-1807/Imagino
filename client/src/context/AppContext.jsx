@@ -8,60 +8,56 @@ export const AppContext = createContext();
 const AppContextProvider = (props) => {
   const [user, setUser] = useState(null);
   const [showLogin, setShowLogin] = useState(false);
-  const [token, setToken] = useState(localStorage.getItem("token"));
-  const [credit, setCredit] = useState(null); // ✅ changed from false to null
+  const [token, setToken] = useState(() => localStorage.getItem("token"));
+  const [credit, setCredit] = useState(null);
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const navigate = useNavigate();
 
-  // ✅ Load user and credit details
-const loadCreditData = async () => {
+  // ✅ Load user and credit details using token
+  const loadCreditData = async () => {
     try {
-        console.log("Attempting to load credit data...");
-        console.log("Token being sent:", token); // Check if token is present
+      const storedToken = token || localStorage.getItem("token");
+      if (!storedToken) {
+        console.warn("🔑 No token found, skipping credit fetch.");
+        return;
+      }
 
-        const { data } = await axios.get(backendUrl + "/api/user/credits", {
-            headers: { token },
-        });
+      console.log("Attempting to load credit data...");
+      console.log("Token being sent:", storedToken);
 
-        console.log("Response from /api/user/credits:", data); // Inspect the full response
+      const { data } = await axios.get(`${backendUrl}/api/user/credits`, {
+        headers: { token: storedToken },
+      });
 
-        if (data.success) {
-            setCredit(data.credits);
-            setUser(data.user);
-            console.log("Credits loaded successfully:", data.credits);
-            console.log("User loaded successfully:", data.user);
-        } else {
-            console.log("Backend reported success: false. Message:", data.message);
-            toast.error(data.message);
-        }
+      if (data.success) {
+        setCredit(data.credits);
+        setUser(data.user);
+        console.log("✅ Credits loaded:", data.credits);
+        console.log("✅ User loaded:", data.user);
+      } else {
+        console.warn("⚠️ Backend error:", data.message);
+        toast.error(data.message);
+      }
     } catch (error) {
-        console.error("Error loading credit data:", error); // Use console.error for errors
-        if (error.response) {
-            // The request was made and the server responded with a status code
-            // that falls out of the range of 2xx
-            console.error("Error response data:", error.response.data);
-            console.error("Error response status:", error.response.status);
-            console.error("Error response headers:", error.response.headers);
-            toast.error(`Error ${error.response.status}: ${error.response.data.message || error.message}`);
-        } else if (error.request) {
-            // The request was made but no response was received
-            console.error("No response received:", error.request);
-            toast.error("No response from server. Check network connection.");
-        } else {
-            // Something happened in setting up the request that triggered an Error
-            console.error("Axios request setup error:", error.message);
-            toast.error("An unexpected error occurred.");
-        }
+      console.error("❌ Error loading credit data:", error);
+      if (error.response) {
+        toast.error(`Error ${error.response.status}: ${error.response.data.message || error.message}`);
+      } else if (error.request) {
+        toast.error("No response from server. Check network connection.");
+      } else {
+        toast.error("An unexpected error occurred.");
+      }
     }
-};
+  };
 
-  // ✅ Image generation with credit deduction
+  // ✅ Generate image and deduct credit
   const generateImage = async (prompt) => {
     try {
+      const storedToken = token || localStorage.getItem("token");
       const { data } = await axios.post(
-        backendUrl + "/api/image/generate-image",
+        `${backendUrl}/api/image/generate-image`,
         { prompt },
-        { headers: { token } }
+        { headers: { token: storedToken } }
       );
 
       if (data.success) {
@@ -79,6 +75,14 @@ const loadCreditData = async () => {
     }
   };
 
+  // ✅ Login helper to store token and update state
+  const loginUserSession = (token, user) => {
+    localStorage.setItem("token", token);
+    setToken(token);
+    setUser(user);
+    loadCreditData();
+  };
+
   // ✅ Logout resets all state
   const logout = () => {
     localStorage.removeItem("token");
@@ -87,9 +91,13 @@ const loadCreditData = async () => {
     setCredit(null);
   };
 
-  // ✅ Load credit on login
+  // ✅ Load credit on first token load
   useEffect(() => {
-    if (token) {
+    const storedToken = localStorage.getItem("token");
+    if (storedToken && !token) {
+      setToken(storedToken);
+    }
+    if (storedToken) {
       loadCreditData();
     }
   }, [token]);
@@ -101,10 +109,11 @@ const loadCreditData = async () => {
     setShowLogin,
     backendUrl,
     token,
-    setCredit,
     setToken,
     credit,
+    setCredit,
     logout,
+    loginUserSession, // ✅ added for login use
     generateImage,
   };
 

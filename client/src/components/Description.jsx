@@ -13,11 +13,30 @@ const Description = () => {
     <p className='text-gray-500 mb-8'>Turn your imagination into visuals</p>
     <div className='flex flex-col gap-5 md:gap-14 md:flex-row items-center'>
         <img src={assets.sample_img_1} className='w-80 xl:w-96 rounded-lg'/>
-        <div>
-            <h2 className='text-3xl font-medium max-w-lg'>Introducing the AI-Powered Text to Image Generator</h2>
-            <p className='text-gray-600 mb-4'>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Ipsa doloremque adipisci voluptates quibusdam eaque veritatis repellendus perspiciatis sequi eligendi recusandae minima excepturi pariatur sapiente, nobis ducimus aperiam nostrum impedit velit!</p>
-            <p className='text-gray-600'>Lorem ipsum dolor sit amet consectetur adipisicing elit. Cumque reiciendis illum nisi, minus voluptate quibusdam aut perspiciatis corrupti natus. Repudiandae reiciendis veritatis repellendus amet enim hic aperiam necessitatibus, voluptatum voluptates illo, quasi autem atque molestiae? Maxime rem doloribus dolores, asperiores obcaecati, est totam aspernatur soluta nihil dignissimos nulla autem nobis.</p>
-        </div>
+       <div>
+  <h2 className='text-3xl font-medium max-w-lg'>
+    Introducing the AI-Powered Text to Image Generator
+  </h2>
+  <p className='text-gray-600 mb-4'>
+    Turn your words into stunning visuals instantly with our cutting-edge AI engine. Whether you're a designer, marketer, student, or creative enthusiast—bring your imagination to life like never before.
+  </p>
+
+  <ul className='text-gray-600 mb-4'>
+    <li>✨ Simply enter a prompt.</li>
+    <li>🎨 Watch the AI generate high-quality images in seconds.</li>
+    <li>🔮 No design skills needed—just your creativity.</li>
+  </ul>
+
+
+  <p className='text-gray-600 mb-4'>
+    With a user-friendly interface and seamless experience, anyone can bring their ideas to life—no technical background required. It's fast, intuitive, and incredibly powerful.
+  </p>
+
+  <p className='text-gray-600'>
+    Join thousands of users who are already using our AI image generator to transform ideas into art. Start creating now and explore the limitless potential of imagination.
+  </p>
+</div>
+
         </div>
         </motion.div>
   )

@@ -5,7 +5,7 @@ const transactionSchema = new mongoose.Schema({
     plan:{type:String, required:true},
     amount: {type: Number, required:true},
     credits:{type: Number, required:true},
-    credits:{type: Boolean, default:false},
+    credits:{type: Number, default:false},
     date:{type: Number},
 
 })
