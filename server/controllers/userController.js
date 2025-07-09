@@ -28,7 +28,7 @@ const registerUser = async (req, res) => {
             name,
             email,
             password: hashedPassword,
-            creditBalance: 0 // Initialize credit balance for new users
+            creditBalance: 5 // Initialize credit balance for new users
         };
 
         const newUser = new userModel(userData);
@@ -104,6 +104,90 @@ const razorpayInstance = new razorpay({
     key_secret: process.env.RAZORPAY_KEY_SECRET,
 })
 
+const paymentRazorpay = async (req, res) => {
+    try {
+        console.log("PaymentRazorpay: Full request body:", req.body);
+        console.log("PaymentRazorpay: req.userId:", req.userId);
+        console.log("PaymentRazorpay: Type of req.userId:", typeof req.userId);
+        
+        const { planId } = req.body;
+        const userId = req.userId;
+
+        console.log("PaymentRazorpay: Extracted planId:", planId);
+        console.log("PaymentRazorpay: Extracted userId:", userId);
+        console.log("PaymentRazorpay: planId type:", typeof planId);
+        console.log("PaymentRazorpay: userId type:", typeof userId);
+
+        if (!userId || !planId) {
+            console.log("PaymentRazorpay: Missing details - userId:", !!userId, "planId:", !!planId);
+            return res.json({ success: false, message: "Missing Details" });
+        }
+
+        // Rest of your existing code...
+
+        let credits, plan, amount, date;
+
+        switch (planId) {
+            case "Basic":
+                plan = "Basic";
+                credits = 100;
+                amount = 10;
+                break;
+
+            case "Advanced":
+                plan = "Advanced";
+                credits = 500;
+                amount = 50;
+                break;
+
+            case "Business":
+                plan = "Business";
+                credits = 5000;
+                amount = 250;
+                break;
+
+            default:
+                console.log("PaymentRazorpay: Invalid planId received:", planId);
+                return res.json({ success: false, message: "Plan not found" });
+        }
+
+        date = Date.now();
+
+        const transactionData = {
+            userId,
+            plan,
+            amount,
+            credits,
+            date,
+            payment: false // Initialize payment status
+        };
+
+        console.log("PaymentRazorpay: Creating transaction with data:", transactionData);
+
+        const newTransaction = await transactionModel.create(transactionData);
+        console.log("PaymentRazorpay: New transaction created with ID:", newTransaction._id);
+
+        const options = {
+            amount: amount * 100, // amount in smallest currency unit (e.g., paisa for INR)
+            currency: process.env.CURRENCY,
+            receipt: newTransaction._id.toString(), // Convert ObjectId to string
+        };
+
+        console.log("PaymentRazorpay: Creating Razorpay order with options:", options);
+
+        razorpayInstance.orders.create(options, (error, order) => {
+            if (error) {
+                console.error("PaymentRazorpay: Error creating Razorpay order:", error);
+                return res.json({ success: false, message: error.message || "Failed to create order" });
+            }
+            console.log("PaymentRazorpay: Razorpay order created:", order);
+            res.json({ success: true, order });
+        });
+    } catch (error) {
+        console.error("Error in paymentRazorpay:", error);
+        res.json({ success: false, message: error.message });
+    }
+};
 const verifyRazorpay = async (req, res) => {
     try {
         console.log("verifyRazorpay: Full request body:", req.body);

@@ -7,7 +7,7 @@ userRouter.post('/register',registerUser)
 userRouter.post('/login',loginUser)
 userRouter.get('/credits',userAuth ,userCredits)
 userRouter.post('/pay-razor',userAuth ,paymentRazorpay)
-router.post('/verify-razor', userAuth, verifyRazorpay);
+userRouter.post('/verify-razor', userAuth, verifyRazorpay);
 
 
 
